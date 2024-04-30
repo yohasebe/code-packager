@@ -63,14 +63,49 @@ chmod +x code-packager.sh
 * `-g <respect_gitignore>`: Set to `1` to respect `.gitignore`, `0` to ignore (default: `1`).
 * `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
 * `-z <zip_output>`: Set to `1` to zip the output JSON file, `0` to leave uncompressed (default: `0`).
+* `-v, --version`: Display the version of the script and exit.
+* `-h, --help`: Display this help message and exit.
 
-## Example
+## Examples
+
+**1. Using `-i` to Include Specific File Types:**
 
 ```bash
-./code-packager.sh -t ~/myproject -o code.json -i .py -e .txt -s 5120
+./code-packager.sh -t ~/myproject -o code.json -i .py -i .js -s 2048 -z 1
 ```
 
-This command packages the code from the `~/myproject` directory, including only Python files (`.py`) and excluding text files (`.txt`). It limits the file size to 5MB and outputs the result to `code.json`.
+This command packages the code from the `~/myproject` directory, including only Python (`.py`) and JavaScript (`.js`) files. It limits the file size to 2MB, zips the output file (`code.json`), and respects the `.gitignore` file.
+
+**2. Using `-e` to Exclude Specific File Types:**
+
+```bash
+./code-packager.sh -t ~/myproject -o code.json -e .txt -e .md -d 1
+```
+
+This command packages the code from the `~/myproject` directory, excluding text (`.txt`) and markdown (`.md`) files. It includes dot files and folders and does not zip the output file.
+
+**3. Packaging All File Types:**
+
+```bash
+./code-packager.sh -t ~/myproject -o code.json -s 10240 -g 0
+```
+
+This command packages all files from the `~/myproject` directory, regardless of file type. It limits the file size to 10MB, ignores the `.gitignore` file, and does not zip the output file. 
+
+**Directory Tree Example:**
+
+The script will also print a directory tree of the processed files, similar to this:
+
+```
+├── data
+│   └── sample.csv
+├── main.py
+└── utils
+    ├── __init__.py
+    ├── data_loader.py
+    └── model.py
+
+```
 
 ## Acknowledgements
 
@@ -87,4 +122,3 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Author
 
 Yoichiro Hasebe (yohasebe@gmail.com)
-

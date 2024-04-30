@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Version information
+VERSION="0.1.0"
+
 # Default values
 INCLUDE_EXT="*"
 EXCLUDE_EXT=""
@@ -22,6 +25,7 @@ show_help() {
   echo "  -g <respect_gitignore>  0 to disable, 1 to enable respecting files as per .gitignore (default: enabled)."
   echo "  -d <include_dot_files>  0 to exclude, 1 to include dot files and folders (default: excluded)."
   echo "  -z <zip_output>         0 to disable, 1 to enable zipping the output file (default: disabled)."
+  echo "  -v, --version           Display version information and exit."
   echo "  -h, --help              Display this help and exit."
   echo ""
   echo "Example:"
@@ -31,6 +35,11 @@ show_help() {
   echo "  and zipping the output file named 'output.json'."
   echo ""
   echo "Note: Information of binary files is included in the JSON output, but their contents are not stored."
+}
+
+# Function to display version
+show_version() {
+  echo "Code Packager for Language Models - Version $VERSION"
 }
 
 # Function to check if a file is binary
@@ -44,7 +53,7 @@ is_binary() {
 }
 
 # Parse command line arguments
-while getopts "t:o:i:e:s:g:d:z:h-" opt; do
+while getopts "t:o:i:e:s:g:d:z:vh-" opt; do
   case $opt in
     t) DIRECTORY_PATH="${OPTARG}" ;;
     o) OUTPUT_FILE="${OPTARG}" ;;
@@ -54,9 +63,13 @@ while getopts "t:o:i:e:s:g:d:z:h-" opt; do
     g) RESPECT_GITIGNORE="${OPTARG}" ;;
     d) INCLUDE_DOT_FILES="${OPTARG}" ;;
     z) ZIP_OUTPUT="${OPTARG}" ;;
+    v) show_version
+       exit 0 ;;
     h) show_help
        exit 0 ;;
     -) case "${OPTARG}" in
+         version) show_version
+                  exit 0 ;;
          help) show_help
               exit 0 ;;
          *) echo "Invalid option --${OPTARG}" >&2
