@@ -6,13 +6,16 @@ Package your codebase into a JSON file, ready to be analyzed and understood by l
 
 This project provides a bash script, `code-packager.sh`, that simplifies the process of preparing your code for interaction with LLMs. By converting your code into a structured format, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
 
-## Features
+### Features
 
-* **Comprehensive Code Packaging:**  Handles various file types and sizes, allowing you to include or exclude specific extensions and respect `.gitignore` rules.
-* **Customizable Output:**  Control the level of detail and structure of the generated JSON file, tailoring it to your specific LLM and use case.
-* **Efficient Processing:**  Optimized for speed and efficiency, ensuring a smooth experience even with large codebases.
-* **Easy Integration:**  Simple command-line interface and clear instructions make it easy to incorporate into your workflow.
-
+- **Comprehensive Code Packaging:**
+  - Handles various file types and sizes, allowing you to include or exclude specific extensions, respect `.gitignore` rules, and optionally zip archive the resulting JSON file for efficient storage and sharing.
+- **Customizable Output:**
+   - Control the level of detail and structure of the generated JSON file by including or excluding files of particular extensions, tailoring the output to your specific Language Model (LLM) and use case requirements.
+- **Structured JSON Output for LLM Interpretation:**
+   - Formats the packaged codebase into JSON, enabling easy interpretation by Language Models (LLMs) for advanced analysis and code-related tasks. The structured organization facilitates seamless integration with various LLMs.
+- **Single Bash Script for Easy Integration:**
+   - Consists of a single bash script with a simple command-line interface, making it easy to use in various environments. Clear instructions ensure straightforward incorporation into your workflow for efficient code packaging, including the option to zip archive the output file.
 
 **Note**: The contents of binary files are automatically omitted for efficiency.
 
