@@ -1,12 +1,12 @@
-## Code Packager for LLMs
+# Code Packager for LLMs
 
 **Bridging the Gap Between Code and AI**
 
-Package your codebase into a JSON file, ready to be analyzed and understood by large language models (LLMs) like GPT-4, Claude, Command R, and Gemini.**
+Package your codebase into a JSON file, ready to be analyzed and understood by large language models (LLMs) like GPT-4, Claude, Command R, and Gemini.
 
 This project provides a bash script, `code-packager.sh`, that simplifies the process of preparing your code for interaction with LLMs. By converting your code into a structured format, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
 
-### Features
+## Features
 
 * **Comprehensive Code Packaging:**  Handles various file types and sizes, allowing you to include or exclude specific extensions and respect `.gitignore` rules.
 * **Customizable Output:**  Control the level of detail and structure of the generated JSON file, tailoring it to your specific LLM and use case.
@@ -16,7 +16,7 @@ This project provides a bash script, `code-packager.sh`, that simplifies the pro
 
 **Note**: The contents of binary files are automatically omitted for efficiency.
 
-### Installation
+## Installation
 
 1. **Clone the repository:**
 
@@ -47,7 +47,7 @@ cd code-packager
 chmod +x code-packager.sh
 ```
 
-### Usage
+## Usage
 
 ```bash
 ./code-packager.sh -t <directory_path> -o <output_file> [options]
@@ -64,7 +64,7 @@ chmod +x code-packager.sh
 * `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
 * `-z <zip_output>`: Set to `1` to zip the output JSON file, `0` to leave uncompressed (default: `0`).
 
-### Example
+## Example
 
 ```bash
 ./code-packager.sh -t ~/myproject -o code.json -i .py -e .txt -s 5120
@@ -72,20 +72,19 @@ chmod +x code-packager.sh
 
 This command packages the code from the `~/myproject` directory, including only Python files (`.py`) and excluding text files (`.txt`). It limits the file size to 5MB and outputs the result to `code.json`.
 
-### Acknowledgements
+## Acknowledgements
 
 This project was inspired by Simon Willison's `files-to-prompt` (https://github.com/simonw/files-to-prompt) and aims to provide a similar functionality with additional features and customization options.
 
-### Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit pull requests or open issues for any bugs or feature requests.
 
-### License
+## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details. 
 
-### Author
+## Author
 
 Yoichiro Hasebe (yohasebe@gmail.com)
-
 
