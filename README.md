@@ -24,7 +24,7 @@ This project provides a bash script, `code-packager.sh`, that simplifies the pro
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/your-username/code-packager.git
+git clone https://github.com/yohasebe/code-packager.git
 ```
 
 2. **Install dependencies:**
