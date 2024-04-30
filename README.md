@@ -95,7 +95,43 @@ This command packages the code from the `~/myproject` directory, excluding text 
 
 This command packages all files from the `~/myproject` directory, regardless of file type. It limits the file size to 10MB, ignores the `.gitignore` file, and does not zip the output file. 
 
-**Directory Tree Example:**
+### Example Output
+
+The resulting JSON output may look similar to the following structure:
+
+```json
+{
+  "files": [
+    {
+      "filename": "sample.csv",
+      "content": "id,name,age\n1,John Doe,30\n2,Jane Smith,28\n3,Michael Johnson,35",
+      "path": "/data/"
+    },
+    {
+      "filename": "main.py",
+      "content": "def greet(name):\n    return f\"Hello, {name}!\"",
+      "path": "/"
+    },
+    {
+      "filename": "__init__.py",
+      "content": "# Initialization file for the utils package",
+      "path": "/utils/"
+    },
+    {
+      "filename": "data_loader.py",
+      "content": "import pandas as pd\n\ndef load_data(file_path):\n    return pd.read_csv(file_path)",
+      "path": "/utils/"
+    },
+    {
+      "filename": "model.py",
+      "content": "class Model:\n    def __init__(self):\n        self.name = 'Sample Model'\n\n    def predict(self, input_data):\n        # Model prediction logic here\n        return 'Prediction'",
+      "path": "/utils/"
+    }
+  ]
+}
+```
+
+### Directory Tree Example
 
 The script will also print a directory tree of the processed files, similar to this:
 
