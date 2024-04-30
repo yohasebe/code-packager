@@ -111,6 +111,7 @@ $temp_dir
 # Cleanup function to remove generated files
 cleanup() {
     rm -f code.json code.zip
+    rm -f empty_dir.json gitignore_test.json
 }
 
 # Run all test cases
