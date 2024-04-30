@@ -159,7 +159,7 @@ export -f process_file is_binary
 export STAT_CMD MAX_SIZE DIRECTORY_PATH RESPECT_GITIGNORE INCLUDE_DOT_FILES
 
 # Construct the find command
-find_command="find \"$DIRECTORY_PATH\" -type f"
+find_command="find \"$DIRECTORY_PATH\" -type f -empty"
 
 # Include extensions
 if [ ${#INCLUDE_EXT[@]} -gt 0 ]; then
@@ -180,8 +180,13 @@ if [ ${#INCLUDE_EXT[@]} -eq 0 ] && [ ${#EXCLUDE_EXT[@]} -gt 0 ]; then
     find_command+=" \\)"
 fi
 
-# Execute find command, filter out excluded files, and process files
-json_array=$(eval "$find_command" | grep -v "\.${EXCLUDE_EXT##*.}$" | xargs -I {} bash -c 'process_file "{}"' | jq -s .)
+# Process files using glob
+json_array="[]"  # Initialize as an empty array
+for file in "$DIRECTORY_PATH"/*; do
+    if [[ -f "$file" ]]; then  # Check if it's a regular file
+        json_array+=("$(process_file "$file")")
+    fi
+done
 
 # Output the JSON object using jq and pretty print
 echo "{\"files\":$json_array}" | jq . > "$OUTPUT_FILE"
@@ -189,7 +194,7 @@ echo "{\"files\":$json_array}" | jq . > "$OUTPUT_FILE"
 # Zip the output file if requested
 if [ "$ZIP_OUTPUT" -eq 1 ]; then
     zip_file="${OUTPUT_FILE%.*}.zip"
-    zip -j "$zip_file" "$OUTPUT_FILE"
+    zip -jq "$zip_file" "$OUTPUT_FILE"
     echo "Output file zipped: $zip_file"
 fi
 
