@@ -103,32 +103,34 @@ The resulting JSON output may look similar to the following structure:
 {
   "files": [
     {
-      "filename": "sample.csv",
-      "content": "id,name,age\n1,John Doe,30\n2,Jane Smith,28\n3,Michael Johnson,35",
-      "path": "/data/"
-    },
-    {
       "filename": "main.py",
-      "content": "def greet(name):\n    return f\"Hello, {name}!\"",
+      "content": "from utils.data_loader import load_data\n\nfile_path = 'data/sample.csv'\ndata = load_data(file_path)\nprint(data.head())\n",
       "path": "/"
     },
     {
+      "filename": "sample.csv",
+      "content": "name, age, city\nAlice, 30, New York\nBob, 25, Los Angeles\nCharlie, 35, Chicago\n",
+      "path": "/data/"
+    },
+    {
       "filename": "__init__.py",
-      "content": "# Initialization file for the utils package",
+      "content": "class Example:\n    def __init__(self):\n        self.data = []\n\n    def add_data(self, new_data):\n        self.data.append(new_data)\n",
       "path": "/utils/"
     },
     {
       "filename": "data_loader.py",
-      "content": "import pandas as pd\n\ndef load_data(file_path):\n    return pd.read_csv(file_path)",
+      "content": "import pandas as pd\n\ndef load_data(file_path):\n    data = pd.read_csv(file_path)\n    return data\n",
       "path": "/utils/"
     },
     {
       "filename": "model.py",
-      "content": "class Model:\n    def __init__(self):\n        self.name = 'Sample Model'\n\n    def predict(self, input_data):\n        # Model prediction logic here\n        return 'Prediction'",
+      "content": "class Model:\n    def __init__(self):\n        self.weights = {}\n\n    def train(self, data):\n        # Training logic here\n        pass\n",
       "path": "/utils/"
     }
   ]
 }
+
+
 ```
 
 ### Directory Tree Example
