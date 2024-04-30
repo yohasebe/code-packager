@@ -55,28 +55,28 @@ chmod +x code-packager.sh
 
 **Options:**
 
-* `-t <directory_path>`: **(Required)** Path to the directory containing the code you want to package.
-* `-o <output_file>`: **(Required)** Path to the output JSON file.
-* `-i <include_extension>`: Include files with the specified extension (e.g., `.py`, `.js`).
-* `-e <exclude_extension>`: Exclude files with the specified extension.
-* `-s <max_size_in_kb>`: Include files up to the specified size in kilobytes.
-* `-g <respect_gitignore>`: Set to `1` to respect `.gitignore`, `0` to ignore (default: `1`).
-* `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
-* `-z <zip_output>`: Set to `1` to zip the output JSON file, `0` to leave uncompressed (default: `0`).
-* `-v, --version`: Display the version of the script and exit.
-* `-h, --help`: Display this help message and exit.
+*   `-t <directory_path>`: **(Required)** Path to the directory containing the code you want to package.
+*   `-o <output_file>`: **(Required)** Path to the output JSON file.
+*   `-i <include_extension>`: Include files with the specified extension (e.g., `.py`, `.js`). You can use this option multiple times to include files with different extensions.
+*   `-e <exclude_extension>`: Exclude files with the specified extension. You can use this option multiple times to exclude files with different extensions. (**Note:** This option is redundant if you are already using the `-i` option to specify included extensions.)
+*   `-s <max_size_in_kb>`: Include files up to the specified size in kilobytes.
+*   `-g <respect_gitignore>`: Set to `1` to respect `.gitignore`, `0` to ignore (default: `1`).
+*   `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
+*   `-z <zip_output>`: Set to `1` to zip the output JSON file, `0` to leave uncompressed (default: `0`).
+*   `-v, --version`: Display the version of the script and exit.
+*   `-h, --help`: Display this help message and exit.
 
 ## Examples
 
-**1. Using `-i` to Include Specific File Types:**
+**1. Including Multiple File Types:**
 
 ```bash
 ./code-packager.sh -t ~/myproject -o code.json -i .py -i .js -s 2048 -z 1
 ```
 
-This command packages the code from the `~/myproject` directory, including only Python (`.py`) and JavaScript (`.js`) files. It limits the file size to 2MB, zips the output file (`code.json`), and respects the `.gitignore` file.
+This command packages the code from the `~/myproject` directory, including only Python (`.py`) and JavaScript (`.js`) files. It limits the file size to 2MB and zips the output file (`code.json`). 
 
-**2. Using `-e` to Exclude Specific File Types:**
+**2. Excluding Specific File Types (Without Inclusion):**
 
 ```bash
 ./code-packager.sh -t ~/myproject -o code.json -e .txt -e .md -d 1
@@ -109,7 +109,7 @@ The script will also print a directory tree of the processed files, similar to t
 
 ## Acknowledgements
 
-This project was inspired by Simon Willison's `files-to-prompt` (https://github.com/simonw/files-to-prompt) and aims to provide a similar functionality with additional features and customization options.
+This project was inspired by Simon Willison's [`files-to-prompt`](https://github.com/simonw/files-to-prompt) and aims to provide a similar functionality with additional features and customization options.
 
 ## Contributing
 
