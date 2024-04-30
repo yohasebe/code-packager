@@ -112,7 +112,7 @@ The script will also print a directory tree of the processed files, similar to t
 
 ## Acknowledgements
 
-This project was inspired by Simon Willison's [`files-to-prompt`](https://github.com/simonw/files-to-prompt) and aims to provide a similar functionality with additional features and customization options.
+This project was inspired by Simon Willison's [`files-to-prompt`](https://github.com/simonw/files-to-prompt). While `files-to-prompt` uses horizontal bars (`---`) to separate file paths and their contents, **Code Packager for LLMs** takes a different approach by utilizing the JSON format. This choice makes the resulting text more structured, unambiguous, and versatile, allowing for enhanced interpretation and interaction with Language Models (LLMs). Additionally, Code Packager for LLMs offers additional features and customization options to further enhance the code packaging process.
 
 ## Contributing
 
