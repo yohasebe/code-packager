@@ -129,8 +129,6 @@ The resulting JSON output may look similar to the following structure:
     }
   ]
 }
-
-
 ```
 
 ### Directory Tree Example
