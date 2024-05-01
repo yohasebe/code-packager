@@ -146,6 +146,28 @@ The script will also print a directory tree of the processed files, similar to t
 
 ```
 
+## Troubleshooting
+
+### Changes to `.gitignore` Not Taking Effect
+
+If you find that changes made to your `.gitignore` file are not being respected (e.g., files that should be ignored are still being processed), you may need to clear your Git cache. This issue can occur because Git continues to track files that were previously committed before they were added to `.gitignore`.
+
+To resolve this issue, you can use the following commands to clear the Git cache:
+
+```bash
+# Navigate to your repository root
+cd path/to/your/repository
+
+# Remove cached files from the index
+git rm -r --cached .
+
+# Re-add all the files to the index
+git add .
+
+# Commit the changes to your repository
+git commit -m "Cleared cache to respect .gitignore changes"
+```
+
 ## Acknowledgements
 
 This project was inspired by Simon Willison's [`files-to-prompt`](https://github.com/simonw/files-to-prompt). While `files-to-prompt` uses horizontal bars (`---`) to separate file paths and their contents, **Code Packager for LLMs** takes a different approach by utilizing the JSON format. This choice makes the resulting text more structured, unambiguous, and versatile, allowing for enhanced interpretation and interaction with Language Models (LLMs). Additionally, Code Packager for LLMs offers additional features and customization options to further enhance the code packaging process.
