@@ -159,7 +159,12 @@ export -f process_file is_binary
 export STAT_CMD MAX_SIZE DIRECTORY_PATH RESPECT_GITIGNORE INCLUDE_DOT_FILES
 
 # Construct the find command
-find_command="find \"$DIRECTORY_PATH\" -type f -empty"
+find_command="find \"$DIRECTORY_PATH\" -type f"
+
+# Exclude dot files if INCLUDE_DOT_FILES is 0
+if [ "$INCLUDE_DOT_FILES" -eq 0 ]; then
+    find_command+=" -not -path '*/.*'"
+fi
 
 # Include extensions
 if [ ${#INCLUDE_EXT[@]} -gt 0 ]; then
@@ -180,13 +185,8 @@ if [ ${#INCLUDE_EXT[@]} -eq 0 ] && [ ${#EXCLUDE_EXT[@]} -gt 0 ]; then
     find_command+=" \\)"
 fi
 
-# Process files using glob
-json_array="[]"  # Initialize as an empty array
-for file in "$DIRECTORY_PATH"/*; do
-    if [[ -f "$file" ]]; then  # Check if it's a regular file
-        json_array+=("$(process_file "$file")")
-    fi
-done
+# Execute find command, filter out excluded files, and process files
+json_array=$(eval "$find_command" | grep -v "\.${EXCLUDE_EXT##*.}$" | xargs -I {} bash -c 'process_file "{}"' | jq -s .)
 
 # Output the JSON object using jq and pretty print
 echo "{\"files\":$json_array}" | jq . > "$OUTPUT_FILE"
