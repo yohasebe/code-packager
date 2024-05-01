@@ -1,5 +1,7 @@
 ### macOS ###
-# General
 .DS_Store
 .AppleDouble
 .LSOverride
+
+### code-packager ###
+test-code-packager.sh

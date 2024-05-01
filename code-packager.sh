@@ -155,6 +155,28 @@ process_file() {
     fi
 }
 
+process_file() {
+    local file="$1"
+    # Check if respecting .gitignore and if the file is ignored
+    if [[ "$RESPECT_GITIGNORE" -eq 1 && -d "$DIRECTORY_PATH/.git" ]]; then
+        if git --git-dir="$DIRECTORY_PATH/.git" --work-tree="$DIRECTORY_PATH" check-ignore "$file" > /dev/null; then
+            return # Skip file if it is ignored by .gitignore
+        fi
+    fi
+
+    local filesize=$($STAT_CMD "$file")
+    if [ "$filesize" -le $((MAX_SIZE * 1024)) ]; then
+        if is_binary "$file"; then
+            local content="null" # Do not include content for binary files
+        else
+            local content=$(jq -Rs . < "$file")
+        fi
+        local filename=$(basename "$file")
+        local dirpath=$(dirname "$file" | sed "s|^$DIRECTORY_PATH||")
+        echo "{\"filename\":\"$filename\", \"content\":$content, \"path\":\"$dirpath/\"}"
+    fi
+}
+
 export -f process_file is_binary
 export STAT_CMD MAX_SIZE DIRECTORY_PATH RESPECT_GITIGNORE INCLUDE_DOT_FILES
 
