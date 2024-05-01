@@ -108,6 +108,23 @@ $temp_dir
     rm -rf "$temp_dir" # Cleanup
 }
 
+# Test case for validating JSON structure
+test_case_json_structure() {
+    local test_name="Validate JSON Structure"
+    local options="-t $current_dir -o code.json"
+    ./code-packager.sh $options 2>&1
+
+    # Check if JSON is valid
+    if jq empty code.json; then
+        echo "Test passed: $test_name"
+    else
+        echo "Test failed: $test_name"
+        echo "Invalid JSON structure in output."
+        jq . code.json  # Output the JSON to help diagnose issues
+    fi
+    echo "------------------------"
+}
+
 # Cleanup function to remove generated files
 cleanup() {
     rm -f code.json code.zip
@@ -123,6 +140,7 @@ test_case_5
 test_case_6
 test_case_7
 test_case_8
+test_case_json_structure
 
 # Cleanup generated files
 cleanup
