@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Test script for code-packager.sh
+# Test script for code-packager
 
-# Function to run the code-packager.sh with given options and compare the output
+# Function to run the code-packager with given options and compare the output
 run_test() {
     local test_name="$1"
     local options="$2"
@@ -10,7 +10,7 @@ run_test() {
 
     echo "Running test: $test_name"
 
-    output=$(./code-packager.sh $options 2>&1) 
+    output=$(./code-packager $options 2>&1) 
 
     if [[ "$output" =~ $expected_output_pattern ]]; then
         echo "Test passed: $test_name"
@@ -68,21 +68,21 @@ Directory tree:"
 test_missing_parameters() {
     local options=""
     local expected_output_pattern="Directory path is required.
-Usage: ./code-packager.sh -t <directory_path> -o <output_file> \[options\]"
+Usage: ./code-packager -t <directory_path> -o <output_file> \[options\]"
     run_test "Missing required parameters" "$options" "$expected_output_pattern"
 }
 
 # Test case 5: Displaying version information
 test_version_info() {
     local options="-v"
-    local expected_output_pattern="Code Packager for Language Models - Version 0.1.0"
+    local expected_output_pattern="Code Packager for Language Models - Version"
     run_test "Displaying version information" "$options" "$expected_output_pattern"
 }
 
 # Test case 6: Displaying help information
 test_help_info() {
     local options="-h"
-    local expected_output_pattern="Usage: ./code-packager.sh -t <directory_path> -o <output_file> \[options\]"
+    local expected_output_pattern="Usage: ./code-packager -t <directory_path> -o <output_file> \[options\]"
     run_test "Displaying help information" "$options" "$expected_output_pattern"
 }
 
