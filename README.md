@@ -26,8 +26,8 @@ This project provides a bash script, `code-packager.sh`, that simplifies the pro
 Run the following commands:
 
 ```
-> brew tap yohasebe/code-packager
-> brew install code-packager 
+brew tap yohasebe/code-packager
+brew install code-packager 
 ```
 
 That's it! The `code-packager` command should now be available in your terminal.
@@ -49,19 +49,19 @@ sudo apt-get install git jq tree
 2. Identify a directory in your system's PATH variable where you want to place the script. You can check the directories in your PATH variable by running the following command:
 
 ```bash
-> echo $PATH
+echo $PATH
 ```
 
 3. Move the `code-packager` script to the chosen directory. For example, if you want to move it to `/usr/local/bin`, run the following command:
 
 ```bash
-> mv code-packager /usr/local/bin
+mv code-packager /usr/local/bin
 ```
 
 4. Make sure the script is executable by running the following command:
 
 ```bash
-> chmod +x /usr/local/bin/code-packager
+chmod +x /usr/local/bin/code-packager
 ```
 
 ## Usage
