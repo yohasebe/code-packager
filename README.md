@@ -8,17 +8,15 @@ This project provides a bash script, `code-packager`, that simplifies the proces
 
 ### Features
 
-- **Comprehensive Code Packaging:**
+- 📦 **Comprehensive Code Packaging:**
   - Handles various file types and sizes, allowing you to include or exclude specific extensions, respect `.gitignore` rules, and optionally zip archive the resulting JSON file for efficient storage and sharing.
-- **Customizable Output:**
+- ⚙️ **Customizable Output:**
    - Control the level of detail and structure of the generated JSON file by including or excluding files of particular extensions, tailoring the output to your specific Language Model (LLM) and use case requirements.
-- **Structured JSON Output for LLM Interpretation:**
+- 🤖 **Structured JSON Output for LLM Interpretation:**
    - Formats the packaged codebase into JSON, enabling easy interpretation by Language Models (LLMs) for advanced analysis and code-related tasks. The structured organization facilitates seamless integration with various LLMs.
-- **Single Bash Script for Easy Integration:**
-   - Consists of a single bash script with a simple command-line interface, making it easy to use in various environments. Clear instructions ensure straightforward incorporation into your workflow for efficient code packaging, including the option to zip archive the output file.
-- **Easy Installation and Usage:**
+- 😀 **Easy Installation and Usage:**
    - Available as a Homebrew formula for macOS users and supports manual installation on various platforms. The script offers a range of options to customize the code packaging process, providing flexibility and control over the output.
-- **Binary File Handling:**
+- 🖼️ **Binary File Handling:**
    - Automatically omits the contents of binary files for efficiency, ensuring that only relevant code is included in the packaged output. This feature streamlines the code packaging process and enhances the usability of the resulting JSON file.
 
 ## Installation
