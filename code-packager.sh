@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Version information
-VERSION="0.1.0"
+VERSION="0.1.1"
 
 # Default values
 INCLUDE_EXT=()  # Array to store include extensions
@@ -79,7 +79,13 @@ while getopts "t:o:i:e:s:g:d:z:vh-" opt; do
         o) OUTPUT_FILE="${OPTARG}" ;;
         i) INCLUDE_EXT+=("${OPTARG}") ;;  # Store in INCLUDE_EXT array
         e) EXCLUDE_EXT+=("${OPTARG}") ;;  # Store in EXCLUDE_EXT array
-        s) MAX_SIZE="${OPTARG}" ;;
+        s) MAX_SIZE="${OPTARG}"
+            # Validate if MAX_SIZE is a valid number
+            if ! [[ "$MAX_SIZE" =~ ^[0-9]+$ ]]; then
+                echo "Error: Invalid value for -s option. Please provide a positive integer."
+                exit 1
+            fi
+            ;;
         g) RESPECT_GITIGNORE="${OPTARG}" ;;
         d) INCLUDE_DOT_FILES="${OPTARG}" ;;
         z) ZIP_OUTPUT="${OPTARG}" ;;
@@ -92,11 +98,9 @@ while getopts "t:o:i:e:s:g:d:z:vh-" opt; do
                       exit 0 ;;
              help) show_help
                   exit 0 ;;
-             *) echo "Invalid option --${OPTARG}" >&2
+             *) echo "Error: Invalid option -${OPTARG}. Use -h or --help for usage information." >&2
                 exit 1 ;;
            esac ;;
-        \\?) echo "Invalid option -${OPTARG}" >&2
-            exit 1 ;;
     esac
 done
 
@@ -107,10 +111,30 @@ if [ -z "$DIRECTORY_PATH" ]; then
     exit 1
 fi
 
+# Ensure required parameters are provided
+if [ -z "$DIRECTORY_PATH" ]; then
+    echo "Directory path is required."
+    show_help
+    exit 1
+fi
+
+# Check if directory exists
+if [[ ! -d "$DIRECTORY_PATH" ]]; then
+  echo "Error: Directory '$DIRECTORY_PATH' does not exist."
+  exit 1
+fi
+
 if [ -z "$OUTPUT_FILE" ]; then
     echo "Output file path is required."
     show_help
     exit 1
+fi
+
+# Validate output file path
+output_dir=$(dirname "$OUTPUT_FILE")
+if [[ ! -d "$output_dir" || ! -w "$output_dir" ]]; then
+  echo "Error: Cannot write to output directory '$output_dir'."
+  exit 1
 fi
 
 # Check dependencies before proceeding
@@ -141,6 +165,20 @@ process_file() {
     file="$1"
     if [[ "$RESPECT_GITIGNORE" -eq 1 && -d "$DIRECTORY_PATH/.git" && -n $(git --git-dir="$DIRECTORY_PATH/.git" --work-tree="$DIRECTORY_PATH" check-ignore "$file") ]]; then
         return # Skip file if it is ignored by .gitignore
+    fi
+
+    if is_binary "$file"; then
+        local content="null" # Do not include content for binary files
+    else
+        local content=$(jq -Rs . < "$file")
+        # Check jq exit status and handle file read errors
+        if [[ $? -ne 0 ]]; then
+            if [[ $? -eq 1 ]]; then  # jq exit code 1 often indicates a parsing error
+                echo "Warning: Failed to parse content of '$file' using jq."
+            else
+                echo "Warning: Failed to read file '$file'."  # Generic file read error
+            fi
+        fi
     fi
     filesize=$($STAT_CMD "$file")
     if [ "$filesize" -le $((MAX_SIZE * 1024)) ]; then
@@ -208,15 +246,27 @@ if [ ${#INCLUDE_EXT[@]} -eq 0 ] && [ ${#EXCLUDE_EXT[@]} -gt 0 ]; then
 fi
 
 # Execute find command, filter out excluded files, and process files
-json_array=$(eval "$find_command" | grep -v "\.${EXCLUDE_EXT##*.}$" | xargs -I {} bash -c 'process_file "{}"' | jq -s .)
+find_result=$(eval "$find_command")
+if [[ $? -ne 0 ]]; then
+  echo "Error: find command failed with error:"
+  echo "$find_result"
+  exit 1
+fi
+json_array=$(echo "$find_result" | grep -v "\.${EXCLUDE_EXT##*.}$" | xargs -I {} bash -c 'process_file "{}"' | jq -s .)
 
 # Output the JSON object using jq and pretty print
 echo "{\"files\":$json_array}" | jq . > "$OUTPUT_FILE"
 
 # Zip the output file if requested
+
 if [ "$ZIP_OUTPUT" -eq 1 ]; then
     zip_file="${OUTPUT_FILE%.*}.zip"
     zip -jq "$zip_file" "$OUTPUT_FILE"
+    # Check zip exit status
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to zip the output file."
+        exit 1
+    fi
     echo "Output file zipped: $zip_file"
 fi
 
@@ -234,3 +284,4 @@ if [ -n "$EXCLUDE_EXT" ]; then
     tree_options+=" -I '*${EXCLUDE_EXT}'"
 fi
 tree --dirsfirst $tree_options "$DIRECTORY_PATH"
+
