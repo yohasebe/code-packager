@@ -1,10 +1,10 @@
 # Code Packager for LLMs
 
-**Bridging the Gap Between Code and AI**
+**Bridging the Gap Between Complex Codebase 🖥️ and AI 🤖**
 
 Package your codebase into a JSON file, ready to be analyzed and understood by large language models (LLMs) like GPT-4, Claude, Command R, and Gemini.
 
-This project provides a bash script, `code-packager.sh`, that simplifies the process of preparing your code for interaction with LLMs. By converting your code into a structured format, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
+This project provides a bash script, `code-packager`, that simplifies the process of preparing your code for interaction with LLMs. By converting your code into a structured format, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
 
 ### Features
 
@@ -21,7 +21,7 @@ This project provides a bash script, `code-packager.sh`, that simplifies the pro
 
 ## Installation
 
-### Homebrew (Recommended)
+### Homebrew (Recommended for macOS Users)
 
 Run the following commands:
 
@@ -67,7 +67,7 @@ chmod +x /usr/local/bin/code-packager
 ## Usage
 
 ```bash
-./code-packager.sh -t <directory_path> -o <output_file> [options]
+code-packager -t <directory_path> -o <output_file> [options]
 ```
 
 **Options:**
@@ -75,7 +75,7 @@ chmod +x /usr/local/bin/code-packager
 *   `-t <directory_path>`: **(Required)** Path to the directory containing the code you want to package.
 *   `-o <output_file>`: **(Required)** Path to the output JSON file.
 *   `-i <include_extension>`: Include files with the specified extension (e.g., `.py`, `.js`). You can use this option multiple times to include files with different extensions.
-*   `-e <exclude_extension>`: Exclude files with the specified extension. You can use this option multiple times to exclude files with different extensions. (**Note:** This option is redundant if you are already using the `-i` option to specify included extensions.)
+*   `-e <exclude_extension>`: Exclude files with the specified extension. You can use this option multiple times to exclude files with different extensions. (**Note:** This option is useful if you are including most files but want to exclude specific types.)
 *   `-s <max_size_in_kb>`: Include files up to the specified size in kilobytes.
 *   `-g <respect_gitignore>`: Set to `1` to respect `.gitignore`, `0` to ignore (default: `1`).
 *   `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
@@ -88,7 +88,7 @@ chmod +x /usr/local/bin/code-packager
 **1. Including Multiple File Types:**
 
 ```bash
-./code-packager.sh -t ~/myproject -o code.json -i .py -i .js -s 2048 -z 1
+code-packager -t ~/myproject -o code.json -i .py -i .js -s 2048 -z 1
 ```
 
 This command packages the code from the `~/myproject` directory, including only Python (`.py`) and JavaScript (`.js`) files. It limits the file size to 2MB and zips the output file (`code.json`). 
@@ -96,7 +96,7 @@ This command packages the code from the `~/myproject` directory, including only 
 **2. Excluding Specific File Types (Without Inclusion):**
 
 ```bash
-./code-packager.sh -t ~/myproject -o code.json -e .txt -e .md -d 1
+code-packager -t ~/myproject -o code.json -e .txt -e .md -d 1
 ```
 
 This command packages the code from the `~/myproject` directory, excluding text (`.txt`) and markdown (`.md`) files. It includes dot files and folders and does not zip the output file.
@@ -104,7 +104,7 @@ This command packages the code from the `~/myproject` directory, excluding text 
 **3. Packaging All File Types:**
 
 ```bash
-./code-packager.sh -t ~/myproject -o code.json -s 10240 -g 0
+code-packager -t ~/myproject -o code.json -s 10240 -g 0
 ```
 
 This command packages all files from the `~/myproject` directory, regardless of file type. It limits the file size to 10MB, ignores the `.gitignore` file, and does not zip the output file. 
@@ -128,7 +128,7 @@ The resulting JSON output may look similar to the following structure:
     },
     {
       "filename": "__init__.py",
-      "content": "class Example:\n    def __init__(self):\n        self.data = []\n\n    def add_data(self, new_data):\n        self.data.append(new_data)\n",
+      "content": "class Example:\n    def __init__(self):\n        this.data = []\n\n    def add_data(this, new_data):\n        this.data.append(new_data)\n",
       "path": "/utils/"
     },
     {
@@ -138,7 +138,7 @@ The resulting JSON output may look similar to the following structure:
     },
     {
       "filename": "model.py",
-      "content": "class Model:\n    def __init__(self):\n        self.weights = {}\n\n    def train(self, data):\n        # Training logic here\n        pass\n",
+      "content": "class Model:\n    def __init__(this):\n        this.weights = {}\n\n    def train(this, data):\n        # Training logic here\n        pass\n",
       "path": "/utils/"
     }
   ]
