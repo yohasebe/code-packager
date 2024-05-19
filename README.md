@@ -73,7 +73,7 @@ code-packager -t <directory_path> -o <output_file> [options]
 **Options:**
 
 *   `-t <directory_path>`: **(Required)** Path to the directory containing the code you want to package.
-*   `-o <output_file>`: **(Required)** Path to the output JSON file.
+*   `-o <output_file>`: **(Required)** Path to the output JSON file. If a directory path is specified, the output file will be named based on the target directory.
 *   `-i <include_extension>`: Include files with the specified extension (e.g., `.py`, `.js`). You can use this option multiple times to include files with different extensions.
 *   `-e <exclude_extension>`: Exclude files with the specified extension. You can use this option multiple times to exclude files with different extensions. (**Note:** This option is useful if you are including most files but want to exclude specific types.)
 *   `-s <max_size_in_kb>`: Include files up to the specified size in kilobytes.
@@ -109,6 +109,14 @@ code-packager -t ~/myproject -o code.json -s 10240 -g 0
 
 This command packages all files from the `~/myproject` directory, regardless of file type. It limits the file size to 10MB, ignores the `.gitignore` file, and does not zip the output file. 
 
+**4. Specifying Output Directory:**
+
+```bash
+code-packager -t ~/myproject -o ~/output_dir -s 10240 -g 0
+```
+
+This command packages all files from the `~/myproject` directory, regardless of file type. It limits the file size to 10MB, ignores the `.gitignore` file, and saves the output JSON file as `~/output_dir/myproject.json`.
+
 ### Example Output
 
 The resulting JSON output may look similar to the following structure:
@@ -128,7 +136,7 @@ The resulting JSON output may look similar to the following structure:
     },
     {
       "filename": "__init__.py",
-      "content": "class Example:\n    def __init__(self):\n        this.data = []\n\n    def add_data(this, new_data):\n        this.data.append(new_data)\n",
+      "content": "class Example:\n    def __init__(this):\n        this.data = []\n\n    def add_data(this, new_data):\n        this.data.append(new_data)\n",
       "path": "/utils/"
     },
     {
@@ -157,7 +165,6 @@ The script will also print a directory tree of the processed files, similar to t
     ├── __init__.py
     ├── data_loader.py
     └── model.py
-
 ```
 
 ## Troubleshooting

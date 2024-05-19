@@ -91,9 +91,7 @@ test_empty_dir() {
     local temp_dir=$(mktemp -d)
     local options="-t $temp_dir -o empty_dir.json"
     local expected_output_pattern="JSON output saved to: empty_dir.json
-Directory tree:
-$temp_dir
-"
+Directory tree:"
     run_test "Empty directory" "$options" "$expected_output_pattern"
     validate_json "empty_dir.json"
     rm -rf "$temp_dir" # Cleanup
@@ -106,9 +104,7 @@ test_gitignore() {
     echo "ignored.txt" > "$temp_dir/.gitignore"
     local options="-t $temp_dir -o gitignore_test.json"
     local expected_output_pattern="JSON output saved to: gitignore_test.json
-Directory tree:
-$temp_dir
-"
+Directory tree:"
     run_test "Respecting .gitignore" "$options" "$expected_output_pattern"
     validate_json "gitignore_test.json"
     rm -rf "$temp_dir" # Cleanup
@@ -119,6 +115,17 @@ test_invalid_option() {
     local options="-t . -o output.json -x invalid_option"
     local expected_output_pattern="^.*: illegal option -- x" 
     run_test "Invalid input option" "$options" "$expected_output_pattern"
+}
+
+# Test case 10: Output directory specified
+test_output_directory() {
+    local temp_dir=$(mktemp -d)
+    local options="-t $current_dir -o $temp_dir"
+    local expected_output_pattern="JSON output saved to: $temp_dir/$(basename "$current_dir").json
+Directory tree:"
+    run_test "Output directory specified" "$options" "$expected_output_pattern"
+    validate_json "$temp_dir/$(basename "$current_dir").json"
+    rm -rf "$temp_dir" # Cleanup
 }
 
 # Cleanup function to remove generated files
@@ -136,6 +143,7 @@ test_help_info
 test_empty_dir
 test_gitignore
 test_invalid_option
+test_output_directory
 
 # Cleanup generated files
 cleanup

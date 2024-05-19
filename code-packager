@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Version information
-VERSION="0.1.1"
+VERSION="0.2.0"
 
 # Default values
 INCLUDE_EXT=()  # Array to store include extensions
@@ -111,23 +111,16 @@ if [ -z "$DIRECTORY_PATH" ]; then
     exit 1
 fi
 
-# Ensure required parameters are provided
-if [ -z "$DIRECTORY_PATH" ]; then
-    echo "Directory path is required."
-    show_help
-    exit 1
-fi
-
 # Check if directory exists
 if [[ ! -d "$DIRECTORY_PATH" ]]; then
   echo "Error: Directory '$DIRECTORY_PATH' does not exist."
   exit 1
 fi
 
-if [ -z "$OUTPUT_FILE" ]; then
-    echo "Output file path is required."
-    show_help
-    exit 1
+# Determine the output file name if a directory is specified
+if [ -d "$OUTPUT_FILE" ]; then
+    base_dir=$(basename "$(realpath "$DIRECTORY_PATH")")
+    OUTPUT_FILE="$OUTPUT_FILE/$base_dir.json"
 fi
 
 # Validate output file path
@@ -161,38 +154,6 @@ else
 fi
 
 # Function to process each file
-process_file() {
-    file="$1"
-    if [[ "$RESPECT_GITIGNORE" -eq 1 && -d "$DIRECTORY_PATH/.git" && -n $(git --git-dir="$DIRECTORY_PATH/.git" --work-tree="$DIRECTORY_PATH" check-ignore "$file") ]]; then
-        return # Skip file if it is ignored by .gitignore
-    fi
-
-    if is_binary "$file"; then
-        local content="null" # Do not include content for binary files
-    else
-        local content=$(jq -Rs . < "$file")
-        # Check jq exit status and handle file read errors
-        if [[ $? -ne 0 ]]; then
-            if [[ $? -eq 1 ]]; then  # jq exit code 1 often indicates a parsing error
-                echo "Warning: Failed to parse content of '$file' using jq."
-            else
-                echo "Warning: Failed to read file '$file'."  # Generic file read error
-            fi
-        fi
-    fi
-    filesize=$($STAT_CMD "$file")
-    if [ "$filesize" -le $((MAX_SIZE * 1024)) ]; then
-        if is_binary "$file"; then
-            content="null" # Do not include content for binary files
-        else
-            content=$(jq -Rs . < "$file")
-        fi
-        filename=$(basename "$file")
-        dirpath=$(dirname "$file" | sed "s|^$DIRECTORY_PATH||")
-        echo "{\"filename\":\"$filename\", \"content\":$content, \"path\":\"$dirpath/\"}"
-    fi
-}
-
 process_file() {
     local file="$1"
     # Check if respecting .gitignore and if the file is ignored
@@ -258,7 +219,6 @@ json_array=$(echo "$find_result" | grep -v "\.${EXCLUDE_EXT##*.}$" | xargs -I {}
 echo "{\"files\":$json_array}" | jq . > "$OUTPUT_FILE"
 
 # Zip the output file if requested
-
 if [ "$ZIP_OUTPUT" -eq 1 ]; then
     zip_file="${OUTPUT_FILE%.*}.zip"
     zip -jq "$zip_file" "$OUTPUT_FILE"
@@ -280,8 +240,10 @@ if [ "$INCLUDE_DOT_FILES" -eq 0 ]; then
 else
     tree_options+=" -a"
 fi
-if [ -n "$EXCLUDE_EXT" ]; then
-    tree_options+=" -I '*${EXCLUDE_EXT}'"
+if [ ${#EXCLUDE_EXT[@]} -gt 0 ]; then
+    tree_options+=" -I '$(IFS="|"; echo "${EXCLUDE_EXT[*]}")'"
 fi
-tree --dirsfirst $tree_options "$DIRECTORY_PATH"
+
+# Execute the tree command with the constructed options
+tree $tree_options "$DIRECTORY_PATH"
 
