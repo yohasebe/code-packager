@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Version information
-VERSION="0.2.0"
+VERSION="0.2.1"
 
 # Default values
 INCLUDE_EXT=()  # Array to store include extensions
@@ -58,7 +58,7 @@ is_binary() {
 
 # Check for required dependencies
 check_dependencies() {
-    local dependencies=("jq" "tree" "git" "file")
+    local dependencies=("jq" "git" "file")
     local missing_deps=0
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
@@ -232,18 +232,16 @@ fi
 
 echo "JSON output saved to: $OUTPUT_FILE"
 
-# Generate directory tree using tree command
+# Generate directory tree using git ls-files command
 echo "Directory tree:"
-tree_options="-I '.git|node_modules'"
-if [ "$INCLUDE_DOT_FILES" -eq 0 ]; then
-    tree_options+=" -I '.*'"
+if [[ "$RESPECT_GITIGNORE" -eq 1 && -d "$DIRECTORY_PATH/.git" ]]; then
+  # Use git ls-files to get the list of tracked files, respecting .gitignore
+  git --git-dir="$DIRECTORY_PATH/.git" --work-tree="$DIRECTORY_PATH" ls-files -z | 
+  while IFS= read -r -d '' file; do
+    # Print the file path relative to the target directory
+    echo "${file#$DIRECTORY_PATH/}"
+  done
 else
-    tree_options+=" -a"
+  # If not respecting .gitignore, use find to list all files
+  eval "$find_command -print"
 fi
-if [ ${#EXCLUDE_EXT[@]} -gt 0 ]; then
-    tree_options+=" -I '$(IFS="|"; echo "${EXCLUDE_EXT[*]}")'"
-fi
-
-# Execute the tree command with the constructed options
-tree $tree_options "$DIRECTORY_PATH"
-

@@ -38,12 +38,12 @@ That's it! The `code-packager` command should now be available in your terminal.
 
 - `git`
 - `jq`
-- `tree`
+- `file`
 
 On a Debian-based Linux distribution, you can install these dependencies with:
 
 ```bash
-sudo apt-get install git jq tree 
+sudo apt-get install git jq file
 ```
 
 2. Identify a directory in your system's PATH variable where you want to place the script. You can check the directories in your PATH variable by running the following command:
@@ -153,18 +153,18 @@ The resulting JSON output may look similar to the following structure:
 }
 ```
 
-### Directory Tree Example
+### File/Directory Structure Example
 
-The script will also print a directory tree of the processed files, similar to this:
+The script will also print a list of files and directories that were processed, similar to this:
 
 ```
-├── data
-│   └── sample.csv
-├── main.py
-└── utils
-    ├── __init__.py
-    ├── data_loader.py
-    └── model.py
+File/Directory Structure:
+-------------------------
+main.py
+data/sample.csv
+utils/__init__.py
+utils/data_loader.py
+utils/model.py
 ```
 
 ## Troubleshooting
