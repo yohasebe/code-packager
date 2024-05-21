@@ -2,7 +2,7 @@
 
 **Bridging the Gap Between Complex Codebase 🖥️ and AI 🤖**
 
-Package your codebase into a JSON file, ready to be analyzed and understood by large language models (LLMs) like GPT-4, Claude, Command R, and Gemini.
+Package your codebase into a single JSON file, ready to be analyzed and understood by large language models (LLMs) like GPT-4, Claude, Command R, and Gemini.
 
 This project provides a bash script, `code-packager`, that simplifies the process of preparing your code for interaction with LLMs. By converting your code into a structured format, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
 
