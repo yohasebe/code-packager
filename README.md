@@ -6,6 +6,11 @@ Package your codebase into a single JSON file, ready to be analyzed and understo
 
 This project provides a bash script, `code-packager`, that simplifies the process of preparing your code for interaction with LLMs. By converting your code into a structured format, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
 
+### Change Log
+
+- [Jun 22, 2024] `max_depth` option added
+- [May 01, 2024] initial commit
+
 ### Features
 
 - 📦 **Comprehensive Code Packaging:**
