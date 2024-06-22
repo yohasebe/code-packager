@@ -128,6 +128,15 @@ Directory tree:"
     rm -rf "$temp_dir" # Cleanup
 }
 
+# Test case 11: Limiting search depth
+test_max_depth() {
+    local options="-t $current_dir -o code.json -m 1"
+    local expected_output_pattern="JSON output saved to: code.json
+Directory tree:"
+    run_test "Limiting search depth" "$options" "$expected_output_pattern"
+    validate_json "code.json"
+}
+
 # Cleanup function to remove generated files
 cleanup() {
     rm -f code.json code.zip empty_dir.json gitignore_test.json output.json
@@ -144,6 +153,7 @@ test_empty_dir
 test_gitignore
 test_invalid_option
 test_output_directory
+test_max_depth
 
 # Cleanup generated files
 cleanup

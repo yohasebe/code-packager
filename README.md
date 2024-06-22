@@ -25,7 +25,7 @@ This project provides a bash script, `code-packager`, that simplifies the proces
 
 Run the following commands:
 
-```
+```bash
 brew tap yohasebe/code-packager
 brew install code-packager 
 ```
@@ -80,6 +80,7 @@ code-packager -t <directory_path> -o <output_file> [options]
 *   `-g <respect_gitignore>`: Set to `1` to respect `.gitignore`, `0` to ignore (default: `1`).
 *   `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
 *   `-z <zip_output>`: Set to `1` to zip the output JSON file, `0` to leave uncompressed (default: `0`).
+*   `-m <max_depth>`: Limit the maximum depth of the search (default: unlimited).
 *   `-v, --version`: Display the version of the script and exit.
 *   `-h, --help`: Display this help message and exit.
 
@@ -116,6 +117,14 @@ code-packager -t ~/myproject -o ~/output_dir -s 10240 -g 0
 ```
 
 This command packages all files from the `~/myproject` directory, regardless of file type. It limits the file size to 10MB, ignores the `.gitignore` file, and saves the output JSON file as `~/output_dir/myproject.json`.
+
+**5. Limiting Search Depth:**
+
+```bash
+code-packager -t ~/myproject -o code.json -m 2
+```
+
+This command packages the code from the `~/myproject` directory, including files up to a depth of 2 levels.
 
 ### Example Output
 

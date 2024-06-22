@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Version information
-VERSION="0.2.1"
+VERSION="0.2.2"
 
 # Default values
 INCLUDE_EXT=()  # Array to store include extensions
@@ -12,6 +12,7 @@ INCLUDE_DOT_FILES=0  # Exclude dot files and folders by default
 DIRECTORY_PATH=""   # Initialize directory path as empty
 OUTPUT_FILE=""    # Initialize output file path as empty
 ZIP_OUTPUT=0     # Disable zipping the output file by default
+MAX_DEPTH=""     # No limit on depth by default
 
 # Function to display help
 show_help() {
@@ -27,16 +28,17 @@ show_help() {
     echo "  -g <respect_gitignore>  0 to disable, 1 to enable respecting files as per .gitignore (default: enabled)."
     echo "  -d <include_dot_files>  0 to exclude, 1 to include dot files and folders (default: excluded)."
     echo "  -z <zip_output>         0 to disable, 1 to enable zipping the output file (default: disabled)."
+    echo "  -m <max_depth>          Limit the maximum depth of the search (default: unlimited)."
     echo "  -v, --version           Display version information and exit."
     echo "  -h, --help              Display this help and exit."
     echo ""
     echo "Example:"
     echo ""
-    echo "  $0 -t ~/project -o output.json -i .txt -i .md -s 500 -g 0 -d 1 -z 1"
+    echo "  $0 -t ~/project -o output.json -i .txt -i .md -s 500 -g 0 -d 1 -z 1 -m 2"
     echo ""
     echo "  This command will search in '~/project' including only '.txt' and '.md' files,"
     echo "  considering files up to 500KB, not respecting files listed in .gitignore, including dot files,"
-    echo "  and zipping the output file named 'output.json'."
+    echo "  zipping the output file named 'output.json', and limiting the search depth to 2 levels."
     echo ""
     echo "Note: Information of binary files is included in the JSON output, but their contents are not stored."
 }
@@ -73,7 +75,7 @@ check_dependencies() {
 }
 
 # Parse command line arguments
-while getopts "t:o:i:e:s:g:d:z:vh-" opt; do
+while getopts "t:o:i:e:s:g:d:z:m:vh-" opt; do
     case $opt in
         t) DIRECTORY_PATH="${OPTARG}" ;;
         o) OUTPUT_FILE="${OPTARG}" ;;
@@ -89,6 +91,13 @@ while getopts "t:o:i:e:s:g:d:z:vh-" opt; do
         g) RESPECT_GITIGNORE="${OPTARG}" ;;
         d) INCLUDE_DOT_FILES="${OPTARG}" ;;
         z) ZIP_OUTPUT="${OPTARG}" ;;
+        m) MAX_DEPTH="${OPTARG}"
+            # Validate if MAX_DEPTH is a valid number
+            if ! [[ "$MAX_DEPTH" =~ ^[0-9]+$ ]]; then
+                echo "Error: Invalid value for -m option. Please provide a positive integer."
+                exit 1
+            fi
+            ;;
         v) show_version
            exit 0 ;;
         h) show_help
@@ -204,6 +213,11 @@ if [ ${#INCLUDE_EXT[@]} -eq 0 ] && [ ${#EXCLUDE_EXT[@]} -gt 0 ]; then
         find_command+=" -and -not -name \"*${ext}\""
     done
     find_command+=" \\)"
+fi
+
+# Add max depth to find command if specified
+if [ -n "$MAX_DEPTH" ]; then
+    find_command+=" -maxdepth $MAX_DEPTH"
 fi
 
 # Execute find command, filter out excluded files, and process files
