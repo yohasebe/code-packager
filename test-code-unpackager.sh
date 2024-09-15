@@ -53,7 +53,7 @@ cleanup() {
 # Test case 1: Basic functionality
 test_basic_functionality() {
     create_test_json
-    local options="-j test.json -d test_output"
+    local options="-j test.json -d test_output -s"
     local expected_output_pattern="Folder structure restored to: test_output"
     run_test "Basic functionality" "$options" "$expected_output_pattern"
 
