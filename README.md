@@ -1,10 +1,10 @@
-# Code Packager for LLMs 📦
+# Code Packager and Unpackager for LLMs 📦
 
 **Bridging the Gap Between Complex Codebase 🖥️ and AI 🤖**
 
-Package your codebase into a single JSON file, ready to be analyzed and understood by large language models (LLMs) like GPT-4, Claude, Command R, and Gemini.
+Effortlessly package and unpack your codebase into and from a single JSON file, ready to be analyzed and understood by large language models (LLMs) like GPT-4, Claude, Command R, and Gemini.
 
-This project provides a bash script, `code-packager`, that simplifies the process of preparing your code for interaction with LLMs. By converting your code into a structured format, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
+This project provides two bash scripts, `code-packager` and `code-unpackager`, that simplify the process of preparing your code for interaction with LLMs. By converting your code into a structured format and restoring it back, you unlock the potential for advanced analysis, code generation, and insightful interactions with AI.
 
 ### Change Log
 
@@ -13,14 +13,16 @@ This project provides a bash script, `code-packager`, that simplifies the proces
 
 ### Features
 
-- 📦 **Comprehensive Code Packaging:**
-  - Handles various file types and sizes, allowing you to include or exclude specific extensions, respect `.gitignore` rules, and optionally zip archive the resulting JSON file for efficient storage and sharing.
-- ⚙️ **Customizable Output:**
+- 📦 **Comprehensive Code Packaging and Unpacking:**
+  - `code-packager` handles various file types and sizes, allowing you to include or exclude specific extensions, respect `.gitignore` rules, and optionally zip archive the resulting JSON file for efficient storage and sharing.
+  - `code-unpackager` restores the packaged JSON back to its original directory structure, making it easy to manage and modify your codebase.
+- ⚙️ **Customizable Output and Restoration:**
    - Control the level of detail and structure of the generated JSON file by including or excluding files of particular extensions, tailoring the output to your specific Language Model (LLM) and use case requirements.
+   - Seamlessly restore the directory structure and file contents from the JSON file, ensuring consistency and ease of use.
 - 🤖 **Structured JSON Output for LLM Interpretation:**
    - Formats the packaged codebase into JSON, enabling easy interpretation by Language Models (LLMs) for advanced analysis and code-related tasks. The structured organization facilitates seamless integration with various LLMs.
 - 😀 **Easy Installation and Usage:**
-   - Available as a Homebrew formula for macOS users and supports manual installation on various platforms. The script offers a range of options to customize the code packaging process, providing flexibility and control over the output.
+   - Available as a Homebrew formula for macOS users and supports manual installation on various platforms. The scripts offer a range of options to customize the code packaging and unpacking process, providing flexibility and control over the output.
 - 🖼️ **Binary File Handling:**
    - Automatically omits the contents of binary files for efficiency, ensuring that only relevant code is included in the packaged output. This feature streamlines the code packaging process and enhances the usability of the resulting JSON file.
 
@@ -35,7 +37,7 @@ brew tap yohasebe/code-packager
 brew install code-packager 
 ```
 
-That's it! The `code-packager` command should now be available in your terminal.
+That's it! The `code-packager` and `code-unpackager` commands should now be available in your terminal.
 
 ### Manual Installation
 
@@ -51,25 +53,29 @@ On a Debian-based Linux distribution, you can install these dependencies with:
 sudo apt-get install git jq file
 ```
 
-2. Identify a directory in your system's PATH variable where you want to place the script. You can check the directories in your PATH variable by running the following command:
+2. Identify a directory in your system's PATH variable where you want to place the scripts. You can check the directories in your PATH variable by running the following command:
 
 ```bash
 echo $PATH
 ```
 
-3. Move the `code-packager` script to the chosen directory. For example, if you want to move it to `/usr/local/bin`, run the following command:
+3. Move the `code-packager` and `code-unpackager` scripts to the chosen directory. For example, if you want to move them to `/usr/local/bin`, run the following commands:
 
 ```bash
 mv code-packager /usr/local/bin
+mv code-unpackager /usr/local/bin
 ```
 
-4. Make sure the script is executable by running the following command:
+4. Make sure the scripts are executable by running the following commands:
 
 ```bash
 chmod +x /usr/local/bin/code-packager
+chmod +x /usr/local/bin/code-unpackager
 ```
 
 ## Usage
+
+### Code Packager
 
 ```bash
 code-packager -t <directory_path> -o <output_file> [options]
@@ -86,6 +92,19 @@ code-packager -t <directory_path> -o <output_file> [options]
 *   `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
 *   `-z <zip_output>`: Set to `1` to zip the output JSON file, `0` to leave uncompressed (default: `0`).
 *   `-m <max_depth>`: Limit the maximum depth of the search (default: unlimited).
+*   `-v, --version`: Display the version of the script and exit.
+*   `-h, --help`: Display this help message and exit.
+
+### Code Unpackager
+
+```bash
+code-unpackager -j <json_file> -d <destination_directory> [options]
+```
+
+**Options:**
+
+*   `-j <json_file>`: **(Required)** Path to the JSON file generated by code-packager.
+*   `-d <destination_directory>`: **(Required)** Path to the directory where the folder structure should be restored.
 *   `-v, --version`: Display the version of the script and exit.
 *   `-h, --help`: Display this help message and exit.
 
@@ -131,6 +150,14 @@ code-packager -t ~/myproject -o code.json -m 2
 
 This command packages the code from the `~/myproject` directory, including files up to a depth of 2 levels.
 
+**6. Unpacking a JSON File:**
+
+```bash
+code-unpackager -j code.json -d ~/restored_project
+```
+
+This command restores the directory structure and files from `code.json` into the `~/restored_project` directory.
+
 ### Example Output
 
 The resulting JSON output may look similar to the following structure:
@@ -155,12 +182,21 @@ The resulting JSON output may look similar to the following structure:
     },
     {
       "filename": "data_loader.py",
-      "content": "import pandas as pd\n\ndef load_data(file_path):\n    data = pd.read_csv(file_path)\n    return data\n",
+      "content": "import pandas as pd\n\ndef load_data(file_path):\n    data = pd.read_csv(file_path)
+    return data
+    ",
       "path": "/utils/"
     },
     {
       "filename": "model.py",
-      "content": "class Model:\n    def __init__(this):\n        this.weights = {}\n\n    def train(this, data):\n        # Training logic here\n        pass\n",
+      "content": "class Model:
+    def __init__(this):
+        this.weights = {}
+
+    def train(this, data):
+        # Training logic here
+        pass
+    ",
       "path": "/utils/"
     }
   ]
@@ -205,7 +241,7 @@ git commit -m "Cleared cache to respect .gitignore changes"
 
 ## Acknowledgements
 
-This project was inspired by Simon Willison's [`files-to-prompt`](https://github.com/simonw/files-to-prompt). While `files-to-prompt` uses horizontal bars (`---`) to separate file paths and their contents, **Code Packager for LLMs** takes a different approach by utilizing the JSON format. This choice makes the resulting text more structured, unambiguous, and versatile, allowing for enhanced interpretation and interaction with Language Models (LLMs). Additionally, Code Packager for LLMs offers additional features and customization options to further enhance the code packaging process.
+This project was inspired by Simon Willison's [`files-to-prompt`](https://github.com/simonw/files-to-prompt). While `files-to-prompt` uses horizontal bars (`---`) to separate file paths and their contents, **Code Packager and Unpackager for LLMs** takes a different approach by utilizing the JSON format. This choice makes the resulting text more structured, unambiguous, and versatile, allowing for enhanced interpretation and interaction with Language Models (LLMs). Additionally, Code Packager and Unpackager for LLMs offer additional features and customization options to further enhance the code packaging and unpacking process.
 
 ## Contributing
 
