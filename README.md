@@ -169,19 +169,6 @@ code-unpackager -j code.json -d ~/restored_project -s
 
 This command restores the directory structure and files from `code.json` into the `~/restored_project` directory without asking for confirmation.
 
-> [!NOTE]
-> The `code-packager` script does not include the contents of binary files (e.g., images, executables) in the resulting JSON file. As a result, when using the `code-unpackager` script, these binary files will be restored with 0 bytes. This is by design to ensure efficient packaging and to focus on text-based content that is more relevant for analysis by language models.
->
-> If you want to exclude certain types of files (e.g., binary files) from being included in the JSON file altogether, you can use the `-e <exclude_extension>` option with the `code-packager` script. This allows you to specify file extensions to exclude, ensuring that these files are not part of the packaged output.
->
-> For example, to exclude image files, you can use:
->
-> ```bash
-> code-packager -t ~/myproject -o code.json -e .png -e .jpg
-> ```
->
-> This command will exclude `.png` and `.jpg` files from the JSON output.
-
 ### Example Output
 
 The resulting JSON output may look similar to the following structure:
@@ -233,7 +220,7 @@ File/Directory Structure:
 
 ## Troubleshooting
 
-### Changes to `.gitignore` Not Taking Effect
+#### Changes to `.gitignore` not taking effect
 
 If you find that changes made to your `.gitignore` file are not being respected (e.g., files that should be ignored are still being processed), you may need to clear your Git cache. This issue can occur because Git continues to track files that were previously committed before they were added to `.gitignore`.
 
@@ -252,6 +239,20 @@ git add .
 # Commit the changes to your repository
 git commit -m "Cleared cache to respect .gitignore changes"
 ```
+
+#### Handling of binary files
+
+The `code-packager` script does not include the contents of binary files (e.g., images, executables) in the resulting JSON file. As a result, when using the `code-unpackager` script, these binary files will be restored with 0 bytes. This is by design to ensure efficient packaging and to focus on text-based content that is more relevant for analysis by language models.
+
+If you want to exclude certain types of files (e.g., binary files) from being included in the JSON file altogether, you can use the `-e <exclude_extension>` option with the `code-packager` script. This allows you to specify file extensions to exclude, ensuring that these files are not part of the packaged output.
+
+For example, to exclude image files, you can use:
+
+```bash
+code-packager -t ~/myproject -o code.json -e .png -e .jpg
+```
+
+This command will exclude `.png` and `.jpg` files from the JSON output.
 
 ## Acknowledgements
 
