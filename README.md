@@ -111,6 +111,19 @@ code-unpackager -j <json_file> -d <destination_directory> [options]
 *   `-v, --version`: Display the version of the script and exit.
 *   `-h, --help`: Display this help message and exit.
 
+> [!NOTE]
+> The `code-packager` script does not include the contents of binary files (e.g., images, executables) in the resulting JSON file. As a result, when using the `code-unpackager` script, these binary files will be restored with 0 bytes. This is by design to ensure efficient packaging and to focus on text-based content that is more relevant for analysis by language models.
+>
+> If you want to exclude certain types of files (e.g., binary files) from being included in the JSON file altogether, you can use the `-e <exclude_extension>` option with the `code-packager` script. This allows you to specify file extensions to exclude, ensuring that these files are not part of the packaged output.
+>
+> For example, to exclude image files, you can use:
+>
+> ```bash
+> code-packager -t ~/myproject -o code.json -e .png -e .jpg
+> ```
+>
+> This command will exclude `.png` and `.jpg` files from the JSON output.
+
 ## Examples
 
 **1. Including Multiple File Types:**
