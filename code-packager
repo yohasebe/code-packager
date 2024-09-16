@@ -58,7 +58,7 @@ is_binary() {
 
 # Check for required dependencies
 check_dependencies() {
-    local dependencies=("jq" "git" "file")
+    local dependencies=("jq" "git" "file" "zip")
     local missing_deps=0
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" &> /dev/null; then

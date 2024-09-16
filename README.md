@@ -47,11 +47,12 @@ That's it! The `code-packager` and `code-unpackager` commands should now be avai
 - `git`
 - `jq`
 - `file`
+- `zip`
 
 On a Debian-based Linux distribution, you can install these dependencies with:
 
 ```bash
-sudo apt-get install git jq file
+sudo apt-get install git jq file zip
 ```
 
 2. Identify a directory in your system's PATH variable where you want to place the scripts. You can check the directories in your PATH variable by running the following command:
