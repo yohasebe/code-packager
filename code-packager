@@ -4,14 +4,16 @@
 VERSION="0.3.0"
 
 # Default values
-INCLUDE_EXT=()  # Array to store include extensions
-EXCLUDE_EXT=()  # Array to store exclude extensions
-MAX_SIZE=10240   # 10MB in KB
+INCLUDE_EXT=()     # Array to store include extensions
+EXCLUDE_EXT=()     # Array to store exclude extensions
+INCLUDE_FILES=()   # Array to store include filenames
+EXCLUDE_FILES=()   # Array to store exclude filenames
+MAX_SIZE=10240     # 10MB in KB
 RESPECT_GITIGNORE=1  # Enable respecting files as per .gitignore by default
 INCLUDE_DOT_FILES=0  # Exclude dot files and folders by default
-DIRECTORY_PATH=""   # Initialize directory path as empty
-OUTPUT_FILE=""    # Initialize output file path as empty
-ZIP_OUTPUT=0     # Disable zipping the output file by default
+DIRECTORY_PATH=""    # Initialize directory path as empty
+OUTPUT_FILE=""       # Initialize output file path as empty
+ZIP_OUTPUT=0         # Disable zipping the output file by default
 
 # Function to display help
 show_help() {
@@ -22,7 +24,9 @@ show_help() {
     echo "  -t <directory_path>     Target directory to process."
     echo "  -o <output_file>        Output file path."
     echo "  -i <include_extension>  Include files with the specified extension (with or without the leading dot)."
+    echo "  -I <include_filename>   Include files with the specified filename."
     echo "  -e <exclude_extension>  Exclude files with the specified extension (with or without the leading dot)."
+    echo "  -E <exclude_filename>   Exclude files with the specified filename."
     echo "  -s <max_size_in_kb>     Include files up to the specified size in kilobytes."
     echo "  -g <respect_gitignore>  0 to disable, 1 to enable respecting files as per .gitignore (default: enabled)."
     echo "  -d <include_dot_files>  0 to exclude, 1 to include dot files and folders (default: excluded)."
@@ -32,11 +36,11 @@ show_help() {
     echo ""
     echo "Example:"
     echo ""
-    echo "  $0 -t ~/project -o output.json -i .txt -i .md -s 500 -g 0 -d 1 -z 1"
+    echo "  $0 -t ~/project -o output.json -i .txt -i .md -I README -E LICENSE -s 500 -g 0 -d 1 -z 1"
     echo ""
-    echo "  This command will search in '~/project' including only '.txt' and '.md' files,"
-    echo "  considering files up to 500KB, not respecting files listed in .gitignore, including dot files,"
-    echo "  zipping the output file named 'output.json'."
+    echo "  This command will search in '~/project' including only '.txt', '.md' files and 'README',"
+    echo "  excluding 'LICENSE', considering files up to 500KB, not respecting files listed in .gitignore,"
+    echo "  including dot files, and zipping the output file named 'output.json'."
     echo ""
     echo "Note: Information of binary files is included in the JSON output, but their contents are not stored."
 }
@@ -73,12 +77,14 @@ check_dependencies() {
 }
 
 # Parse command line arguments
-while getopts "t:o:i:e:s:g:d:z:vh-" opt; do
+while getopts "t:o:i:I:e:E:s:g:d:z:vh-" opt; do
     case $opt in
         t) DIRECTORY_PATH="${OPTARG}" ;;
         o) OUTPUT_FILE="${OPTARG}" ;;
-        i) INCLUDE_EXT+=("${OPTARG}") ;;  # Store in INCLUDE_EXT array
-        e) EXCLUDE_EXT+=("${OPTARG}") ;;  # Store in EXCLUDE_EXT array
+        i) INCLUDE_EXT+=("${OPTARG}") ;;
+        I) INCLUDE_FILES+=("${OPTARG}") ;;
+        e) EXCLUDE_EXT+=("${OPTARG}") ;;
+        E) EXCLUDE_FILES+=("${OPTARG}") ;;
         s) MAX_SIZE="${OPTARG}"
             # Validate if MAX_SIZE is a valid number
             if ! [[ "$MAX_SIZE" =~ ^[0-9]+$ ]]; then
@@ -187,22 +193,61 @@ if [ "$INCLUDE_DOT_FILES" -eq 0 ]; then
     find_command+=" -not -path '*/.*'"
 fi
 
-# Include extensions
-if [ ${#INCLUDE_EXT[@]} -gt 0 ]; then
-    find_command+=" \\( -name \"*${INCLUDE_EXT[0]}\""
-    for ext in "${INCLUDE_EXT[@]:1}"; do
-        find_command+=" -o -name \"*${ext}\""
+# Include extensions and filenames
+if [ ${#INCLUDE_EXT[@]} -gt 0 ] || [ ${#INCLUDE_FILES[@]} -gt 0 ]; then
+    find_command+=" \\( "
+    first=true
+
+    # Add extension patterns
+    for ext in "${INCLUDE_EXT[@]}"; do
+        if [ "$first" = true ]; then
+            find_command+="-name \"*${ext}\""
+            first=false
+        else
+            find_command+=" -o -name \"*${ext}\""
+        fi
     done
+
+    # Add filename patterns
+    for filename in "${INCLUDE_FILES[@]}"; do
+        if [ "$first" = true ]; then
+            find_command+="-name \"${filename}\""
+            first=false
+        else
+            find_command+=" -o -name \"${filename}\""
+        fi
+    done
+
     find_command+=" \\)"
 fi
 
-# Exclude extensions 
-# (Only if include extensions are NOT specified to avoid redundancy)
-if [ ${#INCLUDE_EXT[@]} -eq 0 ] && [ ${#EXCLUDE_EXT[@]} -gt 0 ]; then
-    find_command+=" \\( -not -name \"*${EXCLUDE_EXT[0]}\""
-    for ext in "${EXCLUDE_EXT[@]:1}"; do
-        find_command+=" -and -not -name \"*${ext}\""
+# Exclude extensions and filenames
+# (Only if include patterns are NOT specified to avoid redundancy)
+if [ ${#INCLUDE_EXT[@]} -eq 0 ] && [ ${#INCLUDE_FILES[@]} -eq 0 ] && \
+   ([ ${#EXCLUDE_EXT[@]} -gt 0 ] || [ ${#EXCLUDE_FILES[@]} -gt 0 ]); then
+    find_command+=" \\( "
+    first=true
+
+    # Add extension patterns
+    for ext in "${EXCLUDE_EXT[@]}"; do
+        if [ "$first" = true ]; then
+            find_command+="-not -name \"*${ext}\""
+            first=false
+        else
+            find_command+=" -and -not -name \"*${ext}\""
+        fi
     done
+
+    # Add filename patterns
+    for filename in "${EXCLUDE_FILES[@]}"; do
+        if [ "$first" = true ]; then
+            find_command+="-not -name \"${filename}\""
+            first=false
+        else
+            find_command+=" -and -not -name \"${filename}\""
+        fi
+    done
+
     find_command+=" \\)"
 fi
 
@@ -213,7 +258,7 @@ if [[ $? -ne 0 ]]; then
   echo "$find_result"
   exit 1
 fi
-json_array=$(echo "$find_result" | grep -v "\\.${EXCLUDE_EXT##*.}$" | xargs -I {} bash -c 'process_file "{}"' | jq -s .)
+json_array=$(echo "$find_result" | xargs -I {} bash -c 'process_file "{}"' | jq -s .)
 
 # Output the JSON object using jq and pretty print
 echo "{\"files\":$json_array}" | jq . > "$OUTPUT_FILE"

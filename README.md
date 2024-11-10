@@ -8,6 +8,7 @@ This project provides two bash scripts, `code-packager` and `code-unpackager`, t
 
 ### Change Log
 
+- [Nov 10, 2024] Added support for including/excluding specific filenames using -I and -E options
 - [Sep 15, 2024] `code-unpackager` script added
 - [Jun 22, 2024] `max_depth` option added
 - [May 01, 2024] initial commit
@@ -15,7 +16,7 @@ This project provides two bash scripts, `code-packager` and `code-unpackager`, t
 ### Features
 
 - 📦 **Comprehensive Code Packaging and Unpacking:**
-  - `code-packager` handles various file types and sizes, allowing you to include or exclude specific extensions, respect `.gitignore` rules, and optionally zip archive the resulting JSON file for efficient storage and sharing.
+  - `code-packager` handles various file types and sizes, allowing you to include or exclude specific extensions or filenames, respect `.gitignore` rules, and optionally zip archive the resulting JSON file for efficient storage and sharing.
   - `code-unpackager` restores the packaged JSON back to its original directory structure, making it easy to manage and modify your codebase.
 - ⚙️ **Customizable Output and Restoration:**
    - Control the level of detail and structure of the generated JSON file by including or excluding files of particular extensions, tailoring the output to your specific Language Model (LLM) and use case requirements.
@@ -88,7 +89,9 @@ code-packager -t <directory_path> -o <output_file> [options]
 *   `-t <directory_path>`: **(Required)** Path to the directory containing the code you want to package.
 *   `-o <output_file>`: **(Required)** Path to the output JSON file. If a directory path is specified, the output file will be named based on the target directory.
 *   `-i <include_extension>`: Include files with the specified extension (e.g., `.py`, `.js`). You can use this option multiple times to include files with different extensions.
+*   `-I <include_filename>`: Include files with the specified filename (e.g., `README`, `LICENSE`). You can use this option multiple times to include different files.
 *   `-e <exclude_extension>`: Exclude files with the specified extension. You can use this option multiple times to exclude files with different extensions. (**Note:** This option is useful if you are including most files but want to exclude specific types.)
+*   `-E <exclude_filename>`: Exclude files with the specified filename. You can use this option multiple times to exclude different files.
 *   `-s <max_size_in_kb>`: Include files up to the specified size in kilobytes.
 *   `-g <respect_gitignore>`: Set to `1` to respect `.gitignore`, `0` to ignore (default: `1`).
 *   `-d <include_dot_files>`: Set to `1` to include dot files and folders, `0` to exclude (default: `0`).
@@ -168,6 +171,22 @@ code-unpackager -j code.json -d ~/restored_project -s
 ```
 
 This command restores the directory structure and files from `code.json` into the `~/restored_project` directory without asking for confirmation.
+
+**8. Including and Excluding Specific Files:**
+
+```bash
+code-packager -t ~/myproject -o code.json -I README -I LICENSE -E .gitignore
+```
+
+This command packages the code from the `~/myproject` directory, specifically including `README` and `LICENSE` files while excluding `.gitignore`.
+
+**9. Combining Extensions and Filenames:**
+
+```bash
+code-packager -t ~/myproject -o code.json -i .py -i .js -I README -E TODO.md
+```
+
+This command packages Python and JavaScript files along with the `README` file, but excludes `TODO.md`.
 
 ### Example Output
 

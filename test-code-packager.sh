@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Test script for code-packager
 
 # Function to run the code-packager with given options and compare the output
@@ -39,9 +37,7 @@ current_dir=$(pwd)
 # Test case 1: Including multiple file types
 test_include_multiple_types() {
     local options="-t $current_dir -o code.json -i .sh -i .md -s 2048 -z 1"
-    local expected_output_pattern="Output file zipped: code.zip
-JSON output saved to: code.json
-Directory tree:"
+    local expected_output_pattern=$'Output file zipped: code.zip\nJSON output saved to: code.json\nDirectory tree:'
     run_test "Including multiple file types" "$options" "$expected_output_pattern"
     validate_json "code.json"
 }
@@ -49,8 +45,7 @@ Directory tree:"
 # Test case 2: Excluding specific file types (without inclusion)
 test_exclude_specific_types() {
     local options="-t $current_dir -o code.json -e .txt -e .md -d 1"
-    local expected_output_pattern="JSON output saved to: code.json
-Directory tree:"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
     run_test "Excluding specific file types (without inclusion)" "$options" "$expected_output_pattern"
     validate_json "code.json"
 }
@@ -58,8 +53,7 @@ Directory tree:"
 # Test case 3: Packaging all file types
 test_package_all_types() {
     local options="-t $current_dir -o code.json -s 10240 -g 0"
-    local expected_output_pattern="JSON output saved to: code.json
-Directory tree:"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
     run_test "Packaging all file types" "$options" "$expected_output_pattern"
     validate_json "code.json"
 }
@@ -67,8 +61,7 @@ Directory tree:"
 # Test case 4: Missing required parameters
 test_missing_parameters() {
     local options=""
-    local expected_output_pattern="Directory path is required.
-Usage: ./code-packager -t <directory_path> -o <output_file> \[options\]"
+    local expected_output_pattern=$'Directory path is required.\nUsage: ./code-packager -t <directory_path> -o <output_file> \\[options\\]'
     run_test "Missing required parameters" "$options" "$expected_output_pattern"
 }
 
@@ -82,7 +75,7 @@ test_version_info() {
 # Test case 6: Displaying help information
 test_help_info() {
     local options="-h"
-    local expected_output_pattern="Usage: ./code-packager -t <directory_path> -o <output_file> \[options\]"
+    local expected_output_pattern="Usage: ./code-packager -t <directory_path> -o <output_file> \\[options\\]"
     run_test "Displaying help information" "$options" "$expected_output_pattern"
 }
 
@@ -90,8 +83,7 @@ test_help_info() {
 test_empty_dir() {
     local temp_dir=$(mktemp -d)
     local options="-t $temp_dir -o empty_dir.json"
-    local expected_output_pattern="JSON output saved to: empty_dir.json
-Directory tree:"
+    local expected_output_pattern=$'JSON output saved to: empty_dir.json\nDirectory tree:'
     run_test "Empty directory" "$options" "$expected_output_pattern"
     validate_json "empty_dir.json"
     rm -rf "$temp_dir" # Cleanup
@@ -103,8 +95,7 @@ test_gitignore() {
     touch "$temp_dir/ignored.txt"
     echo "ignored.txt" > "$temp_dir/.gitignore"
     local options="-t $temp_dir -o gitignore_test.json"
-    local expected_output_pattern="JSON output saved to: gitignore_test.json
-Directory tree:"
+    local expected_output_pattern=$'JSON output saved to: gitignore_test.json\nDirectory tree:'
     run_test "Respecting .gitignore" "$options" "$expected_output_pattern"
     validate_json "gitignore_test.json"
     rm -rf "$temp_dir" # Cleanup
@@ -113,7 +104,7 @@ Directory tree:"
 # Test case 9: Invalid input option
 test_invalid_option() {
     local options="-t . -o output.json -x invalid_option"
-    local expected_output_pattern="^.*: illegal option -- x" 
+    local expected_output_pattern="^.*: illegal option -- x"
     run_test "Invalid input option" "$options" "$expected_output_pattern"
 }
 
@@ -121,8 +112,7 @@ test_invalid_option() {
 test_output_directory() {
     local temp_dir=$(mktemp -d)
     local options="-t $current_dir -o $temp_dir"
-    local expected_output_pattern="JSON output saved to: $temp_dir/$(basename "$current_dir").json
-Directory tree:"
+    local expected_output_pattern=$'JSON output saved to: '"$temp_dir/$(basename "$current_dir").json"$'\nDirectory tree:'
     run_test "Output directory specified" "$options" "$expected_output_pattern"
     validate_json "$temp_dir/$(basename "$current_dir").json"
     rm -rf "$temp_dir" # Cleanup
@@ -131,9 +121,24 @@ Directory tree:"
 # Test case 11: Limiting search depth
 test_max_depth() {
     local options="-t $current_dir -o code.json -m 1"
-    local expected_output_pattern="JSON output saved to: code.json
-Directory tree:"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
     run_test "Limiting search depth" "$options" "$expected_output_pattern"
+    validate_json "code.json"
+}
+
+# Test case: Including specific filenames
+test_include_specific_filenames() {
+    local options="-t $current_dir -o code.json -if README.md -if LICENSE"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
+    run_test "Including specific filenames" "$options" "$expected_output_pattern"
+    validate_json "code.json"
+}
+
+# Test case: Excluding specific filenames
+test_exclude_specific_filenames() {
+    local options="-t $current_dir -o code.json -ef README.md -ef LICENSE"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
+    run_test "Excluding specific filenames" "$options" "$expected_output_pattern"
     validate_json "code.json"
 }
 
@@ -154,6 +159,8 @@ test_gitignore
 test_invalid_option
 test_output_directory
 test_max_depth
+test_include_specific_filenames
+test_exclude_specific_filenames
 
 # Cleanup generated files
 cleanup
