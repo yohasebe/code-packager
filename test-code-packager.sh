@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Test script for code-packager
 
 # Function to run the code-packager with given options and compare the output
@@ -126,20 +128,58 @@ test_max_depth() {
     validate_json "code.json"
 }
 
-# Test case: Including specific filenames
+# Test case 12: Including specific filenames
 test_include_specific_filenames() {
-    local options="-t $current_dir -o code.json -if README.md -if LICENSE"
+    local temp_dir=$(mktemp -d)
+    touch "$temp_dir/README.md" "$temp_dir/LICENSE"
+    local options="-t $temp_dir -o code.json -I README.md -I LICENSE"
     local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
     run_test "Including specific filenames" "$options" "$expected_output_pattern"
     validate_json "code.json"
+    rm -rf "$temp_dir"
 }
 
-# Test case: Excluding specific filenames
+# Test case 13: Excluding specific filenames
 test_exclude_specific_filenames() {
-    local options="-t $current_dir -o code.json -ef README.md -ef LICENSE"
+    local temp_dir=$(mktemp -d)
+    touch "$temp_dir/README.md" "$temp_dir/LICENSE" "$temp_dir/test.txt"
+    local options="-t $temp_dir -o code.json -E README.md -E LICENSE"
     local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
     run_test "Excluding specific filenames" "$options" "$expected_output_pattern"
     validate_json "code.json"
+    rm -rf "$temp_dir"
+}
+
+# Test case 14: Combining extensions and filenames
+test_combine_extensions_and_filenames() {
+    local temp_dir=$(mktemp -d)
+    touch "$temp_dir/test.py" "$temp_dir/README.md" "$temp_dir/LICENSE"
+    local options="-t $temp_dir -o code.json -i .py -I README.md -E LICENSE"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
+    run_test "Combining extensions and filenames" "$options" "$expected_output_pattern"
+    validate_json "code.json"
+    rm -rf "$temp_dir"
+}
+
+# Test case 15: Case sensitivity test
+test_case_sensitivity() {
+    local temp_dir=$(mktemp -d)
+    touch "$temp_dir/README.md" "$temp_dir/readme.md"
+    local options="-t $temp_dir -o code.json -I README.md"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
+    run_test "Case sensitivity" "$options" "$expected_output_pattern"
+    validate_json "code.json"
+    rm -rf "$temp_dir"
+}
+
+# Test case 16: Non-existent filename
+test_nonexistent_filename() {
+    local temp_dir=$(mktemp -d)
+    local options="-t $temp_dir -o code.json -I NONEXISTENT"
+    local expected_output_pattern=$'JSON output saved to: code.json\nDirectory tree:'
+    run_test "Non-existent filename" "$options" "$expected_output_pattern"
+    validate_json "code.json"
+    rm -rf "$temp_dir"
 }
 
 # Cleanup function to remove generated files
@@ -161,6 +201,9 @@ test_output_directory
 test_max_depth
 test_include_specific_filenames
 test_exclude_specific_filenames
+test_combine_extensions_and_filenames
+test_case_sensitivity
+test_nonexistent_filename
 
 # Cleanup generated files
 cleanup

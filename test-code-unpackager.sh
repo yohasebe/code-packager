@@ -38,6 +38,16 @@ create_test_json() {
       "filename": "binary.bin",
       "content": null,
       "path": "/subdir/"
+    },
+    {
+      "filename": "README",
+      "content": "This is a README file without extension.",
+      "path": "/"
+    },
+    {
+      "filename": "LICENSE",
+      "content": "This is a LICENSE file without extension.",
+      "path": "/"
     }
   ]
 }
@@ -57,26 +67,21 @@ test_basic_functionality() {
     local expected_output_pattern="Folder structure restored to: test_output"
     run_test "Basic functionality" "$options" "$expected_output_pattern"
 
-    echo "Debug: Content of test.json:"
-    cat test.json
-
     # Verify the created files
-    if [[ -f "test_output/test.txt" ]]; then
-        echo "test.txt created successfully."
-    else
-        echo "Failed to create test.txt"
-    fi
-
-    if [[ -f "test_output/subdir/binary.bin" ]]; then
-        echo "binary.bin created successfully."
-    else
-        echo "Failed to create binary.bin"
-    fi
-
-    if [[ -f "test_output/test.txt" && -f "test_output/subdir/binary.bin" ]]; then
+    if [[ -f "test_output/test.txt" && -f "test_output/subdir/binary.bin" && \
+          -f "test_output/README" && -f "test_output/LICENSE" ]]; then
         echo "File structure verified."
     else
         echo "File structure verification failed."
+    fi
+
+    # Verify file contents
+    if [[ "$(cat test_output/test.txt)" == "This is a test file." && \
+          "$(cat test_output/README)" == "This is a README file without extension." && \
+          "$(cat test_output/LICENSE)" == "This is a LICENSE file without extension." ]]; then
+        echo "File contents verified."
+    else
+        echo "File contents verification failed."
     fi
 
     # Display the contents of the test_output directory
@@ -108,8 +113,17 @@ test_version_info() {
 # Test case 5: Displaying help information
 test_help_info() {
     local options="-h"
-    local expected_output_pattern="Usage: ./code-unpackager -j <json_file> -d <destination_directory> \[options\]"
+    local expected_output_pattern="Usage: ./code-unpackager -j <json_file> -d <destination_directory> \\[options\\]"
     run_test "Displaying help information" "$options" "$expected_output_pattern"
+}
+
+# Test case 6: Invalid JSON structure
+test_invalid_json() {
+    echo "Invalid JSON" > invalid.json
+    local options="-j invalid.json -d test_output"
+    local expected_output_pattern="Error: JSON structure is invalid or does not contain any files."
+    run_test "Invalid JSON structure" "$options" "$expected_output_pattern"
+    rm -f invalid.json
 }
 
 # Clean up before running tests
@@ -121,6 +135,7 @@ test_missing_parameters
 test_nonexistent_json
 test_version_info
 test_help_info
+test_invalid_json
 
 # Clean up after running tests
 cleanup
